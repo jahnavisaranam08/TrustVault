@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrustVault | Manage Permissions</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d0b;
+            color: #f0fdf4;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 28px 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 27px;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin: 0 0 18px;
+        }
+
+        .muted {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: #111a16;
+            border: 1px solid #26372e;
+            border-radius: 12px;
+            padding: 23px;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 7px;
+            border: 1px solid #304438;
+            background: #0b120e;
+            color: #f0fdf4;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid #10b981;
+            outline-offset: 1px;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 15px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: #10b981;
+            color: #04130c;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #34d399;
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid #6ee7b7;
+            outline-offset: 3px;
+        }
+
+        .btn-secondary {
+            background: #17231c;
+            border-color: #304438;
+            color: #f0fdf4;
+        }
+
+        .btn-secondary:hover {
+            background: #26372e;
+        }
+
+        .btn-danger {
+            background: #3b1717;
+            border-color: #713333;
+            color: #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #5b2020;
+        }
+
+        .share-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 17px 0;
+            border-bottom: 1px solid #26372e;
+        }
+
+        .share-row:last-child {
+            border-bottom: none;
+        }
+
+        .email {
+            font-weight: bold;
+            overflow-wrap: anywhere;
+            margin-bottom: 7px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #153527;
+            color: #6ee7b7;
+            font-size: 12px;
+            text-transform: capitalize;
+        }
+
+        .badge-edit {
+            background: #3b2f14;
+            color: #fde68a;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .flash {
+            padding: 13px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .flash-success {
+            background: #123c27;
+            border: 1px solid #166534;
+            color: #bbf7d0;
+        }
+
+        .flash-error,
+        .flash-danger {
+            background: #3b1717;
+            border: 1px solid #713333;
+            color: #fecaca;
+        }
+
+        .flash-warning {
+            background: #3b2f14;
+            border: 1px solid #854d0e;
+            color: #fde68a;
+        }
+
+        .flash-info,
+        .flash-message {
+            background: #172b3b;
+            border: 1px solid #1d4ed8;
+            color: #bfdbfe;
+        }
+
+        .empty {
+            padding: 18px 0;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 13px;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .share-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .actions,
+            .actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    <header class="topbar">
+        <div>
+            <h1>Manage Permissions</h1>
+            <p class="muted">
+                Share your document securely and control access.
+            </p>
+        </div>
+
+        <a class="btn btn-secondary"
+           href="{{ url_for('documents.my_documents') }}">
+            Back to Documents
+        </a>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section class="panel">
+        <h2>Document Details</h2>
+
+        <p class="email">
+            {{ document.title }}
+        </p>
+
+        <p class="muted">
+            Category: {{ document.category or 'General' }}
+        </p>
+    </section>
+
+    <section class="panel">
+        <h2>Share Document</h2>
+
+        <p class="muted" style="margin-bottom:20px">
+            Enter the registered user's email address and choose the
+            access level you want to grant.
+        </p>
+
+        <form method="POST"
+              action="{{ url_for('documents.share', document_id=document.id) }}">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <div class="field">
+                <label for="email">User Email</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    maxlength="120"
+                    placeholder="user@example.com"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="permission">Permission</label>
+
+                <select id="permission" name="permission" required>
+                    <option value="read" selected>Read only</option>
+                    <option value="edit">Edit access</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">
+                Grant Access
+            </button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Users With Access</h2>
+
+        {% if shares %}
+            {% for share in shares %}
+                <div class="share-row">
+
+                    <div>
+                        <div class="email">
+                            {{ share.user.username if share.user else 'Unknown user' }}
+                        </div>
+
+                        <div class="muted">
+                            {{ share.user.email if share.user else 'No email available' }}
+                        </div>
+
+                        <div style="margin-top:10px">
+                            <span class="badge {% if share.permission == 'edit' %}badge-edit{% endif %}">
+                                {{ share.permission }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <form
+                            method="POST"
+                            action="{{ url_for('documents.revoke',
+                                               document_id=document.id,
+                                               share_id=share.id) }}"
+                            onsubmit="return confirm('Revoke access for this user?');"
+                        >
+                            <input type="hidden"
+                                   name="csrf_token"
+                                   value="{{ csrf_token() }}">
+
+                            <button type="submit" class="btn btn-danger">
+                                Revoke Access
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                This document has not been shared with any users yet.
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+</body>
+</html

@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Categories</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d0b;
+            color: #f0fdf4;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0 0 8px; font-size: 27px; }
+        h2 { font-size: 19px; margin: 0; }
+
+        .muted {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 15px;
+            border: 1px solid #304438;
+            border-radius: 7px;
+            background: #17231c;
+            color: #f0fdf4;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: #04130c;
+            border-color: #10b981;
+        }
+
+        .btn:hover { opacity: 0.88; }
+
+        .panel {
+            background: #111a16;
+            border: 1px solid #26372e;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 17px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            display: block;
+            padding: 20px;
+            border-radius: 11px;
+            background: #0c1510;
+            border: 1px solid #26372e;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .category-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #f0fdf4;
+            margin-bottom: 10px;
+        }
+
+        .category-count {
+            color: #10b981;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .category-description {
+            color: #9ca3af;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .empty {
+            color: #9ca3af;
+            text-align: center;
+            padding: 30px 10px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 800px) {
+            .category-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 550px) {
+            .container { padding: 20px 13px; }
+            .panel { padding: 16px; }
+            .category-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 23px; }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    <header class="topbar">
+        <div>
+            <h1>Document Categories</h1>
+            <p class="muted">
+                Organize and find your accessible documents by category.
+            </p>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <a class="btn"
+               href="{{ url_for('pages.dashboard') }}">
+                Dashboard
+            </a>
+
+            <a class="btn btn-primary"
+               href="{{ url_for('documents.upload') }}">
+                + Upload Document
+            </a>
+        </div>
+    </header>
+
+    <section class="panel">
+        <h2>Browse Categories</h2>
+
+        <p class="muted" style="margin-top:10px">
+            Select a category to search documents assigned to it.
+        </p>
+
+        {% if category_counts %}
+            <div class="category-grid">
+                {% for category_name, count in category_counts %}
+                    <a class="category-card"
+                       href="{{ url_for('pages.search_documents',
+                                        category=category_name) }}">
+
+                        <div class="category-name">
+                            {{ category_name or 'Uncategorized' }}
+                        </div>
+
+                        <div class="category-count">
+                            {{ count }}
+                        </div>
+
+                        <div class="category-description">
+                            {{ count }} document{{ '' if count == 1 else 's' }}
+                            in this category. Click to view results.
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty">
+                No categories are available yet.
+                <br>
+                Upload a document and assign it to a category.
+                <br><br>
+
+                <a class="btn btn-primary"
+                   href="{{ url_for('documents.upload') }}">
+                    Upload Document
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+</body>
+</html>

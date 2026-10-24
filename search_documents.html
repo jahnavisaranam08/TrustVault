@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Search Documents</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d0b;
+            color: #f0fdf4;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 28px 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0 0 8px; font-size: 27px; }
+        h2 { margin: 0; font-size: 19px; }
+
+        .muted {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: #111a16;
+            border: 1px solid #26372e;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 7px;
+            border: 1px solid #304438;
+            background: #0b120e;
+            color: #f0fdf4;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid #10b981;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 15px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: #10b981;
+            color: #04130c;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .btn:hover { background: #34d399; }
+
+        .btn-secondary {
+            background: #17231c;
+            border-color: #304438;
+            color: #f0fdf4;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .document-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 17px 0;
+            border-bottom: 1px solid #26372e;
+        }
+
+        .document-row:last-child { border-bottom: none; }
+
+        .document-title {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 7px;
+            overflow-wrap: anywhere;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #153527;
+            color: #6ee7b7;
+            font-size: 12px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 28px 10px;
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 20px 13px; }
+            .panel { padding: 17px; }
+            .search-grid { grid-template-columns: 1fr; }
+            .topbar { align-items: flex-start; }
+            h1 { font-size: 23px; }
+            .document-row { align-items: flex-start; flex-direction: column; }
+            .actions, .actions .btn { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    <header class="topbar">
+        <div>
+            <h1>Search Documents</h1>
+            <p class="muted">
+                Find documents you own or have permission to access.
+            </p>
+        </div>
+
+        <a class="btn btn-secondary"
+           href="{{ url_for('pages.dashboard') }}">
+            Dashboard
+        </a>
+    </header>
+
+    <section class="panel">
+        <form method="GET" action="{{ url_for('pages.search_documents') }}">
+            <div class="search-grid">
+
+                <div>
+                    <label for="q">Document Title</label>
+                    <input
+                        type="search"
+                        id="q"
+                        name="q"
+                        value="{{ request.args.get('q', '') }}"
+                        placeholder="Search by title..."
+                    >
+                </div>
+
+                <div>
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">All categories</option>
+                        {% for category_name in [
+                            'Personal', 'Education', 'Work',
+                            'Finance', 'Legal', 'Other'
+                        ] %}
+                            <option
+                                value="{{ category_name }}"
+                                {% if request.args.get('category') == category_name %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ category_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="result-header">
+            <h2>Search Results</h2>
+            <a class="muted"
+               href="{{ url_for('pages.search_documents') }}">
+                Clear filters
+            </a>
+        </div>
+
+        {% if documents %}
+            {% for document in documents %}
+                <div class="document-row">
+                    <div>
+                        <div class="document-title">
+                            {{ document.title }}
+                        </div>
+
+                        <div class="muted">
+                            Owner:
+                            {{ document.owner.username if document.owner else 'Unknown' }}
+                        </div>
+
+                        <div class="muted" style="margin-top:5px">
+                            Uploaded:
+                            {{ document.created_at.strftime('%d %b %Y')
+                               if document.created_at else 'Date unavailable' }}
+                        </div>
+
+                        <span class="badge">
+                            {{ document.category or 'Uncategorized' }}
+                        </span>
+                    </div>
+
+                    <div class="actions">
+                        <a class="btn"
+                           href="{{ url_for('documents.download',
+                                            document_id=document.id) }}">
+                            Download
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                No documents found for your search.
+                <br>
+                Try another title or category.
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+</body>
+</html>

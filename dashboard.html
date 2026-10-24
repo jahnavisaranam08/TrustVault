@@ -1,0 +1,328 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | TrustVault{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-heading {
+        margin-bottom: 28px;
+    }
+
+    .dashboard-heading h1 {
+        font-size: 28px;
+        margin-bottom: 9px;
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-subtitle {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 23px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+    }
+
+    .stat-title {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .stat-number {
+        color: var(--green);
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    .dashboard-section {
+        min-width: 0;
+        padding: 23px;
+        margin-bottom: 24px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 18px;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .action-card {
+        display: block;
+        min-width: 0;
+        padding: 19px;
+        background: var(--panel-hover);
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .action-card:hover {
+        border-color: var(--green);
+        transform: translateY(-2px);
+    }
+
+    .action-card h3 {
+        color: var(--text);
+        font-size: 15px;
+        margin-bottom: 9px;
+    }
+
+    .action-card p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .document-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .document-row:last-child {
+        border-bottom: none;
+    }
+
+    .document-title {
+        font-size: 14px;
+        font-weight: bold;
+        overflow-wrap: anywhere;
+    }
+
+    .document-category {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 7px;
+    }
+
+    .document-owner {
+        color: var(--green);
+        background: var(--green-dark);
+        border-radius: 20px;
+        padding: 6px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 35px 12px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .dashboard-btn {
+        display: inline-block;
+        padding: 11px 16px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--panel-hover);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .dashboard-btn:hover {
+        border-color: var(--green);
+        color: var(--green);
+    }
+
+    .dashboard-btn-primary {
+        background: var(--green);
+        color: #04120c;
+        border-color: var(--green);
+    }
+
+    .dashboard-btn-primary:hover {
+        background: #36dba9;
+        color: #04120c;
+    }
+
+    @media (max-width: 1000px) {
+        .stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .quick-actions {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .dashboard-heading h1 {
+            font-size: 24px;
+        }
+
+        .stats,
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card,
+        .dashboard-section {
+            padding: 17px;
+        }
+
+        .document-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .section-header {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<header class="dashboard-heading">
+    <h1>Dashboard</h1>
+    <p class="dashboard-subtitle">
+        Welcome to your secure document workspace.
+    </p>
+</header>
+
+<section class="stats">
+
+    <div class="stat-card">
+        <div class="stat-title">My Documents</div>
+        <div class="stat-number">
+            {{ my_documents_count|default(0, true) }}
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Shared With Me</div>
+        <div class="stat-number">
+            {{ shared_documents_count|default(0, true) }}
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Categories</div>
+        <div class="stat-number">
+            {{ categories_count|default(0, true) }}
+        </div>
+    </div>
+
+</section>
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <h2>Quick Actions</h2>
+    </div>
+
+    <div class="quick-actions">
+
+        <a class="action-card"
+           href="{{ url_for('documents.upload') }}">
+            <h3>Upload Document</h3>
+            <p>Securely upload a new document to your vault.</p>
+        </a>
+
+        <a class="action-card"
+           href="{{ url_for('documents.my_documents') }}">
+            <h3>My Documents</h3>
+            <p>View and manage documents available to you.</p>
+        </a>
+
+        <a class="action-card"
+           href="{{ url_for('pages.search_documents') }}">
+            <h3>Search Documents</h3>
+            <p>Find documents by title or category.</p>
+        </a>
+
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <h2>Recent Documents</h2>
+
+        <a class="dashboard-btn"
+           href="{{ url_for('documents.my_documents') }}">
+            View All
+        </a>
+    </div>
+
+    {% if recent_documents is defined and recent_documents %}
+
+        {% for document in recent_documents %}
+
+            <div class="document-row">
+                <div>
+                    <div class="document-title">
+                        {{ document.title }}
+                    </div>
+
+                    <div class="document-category">
+                        Category:
+                        {{ document.category or 'Uncategorized' }}
+                    </div>
+                </div>
+
+                <span class="document-owner">
+                    {% if document.owner %}
+                        {{ document.owner.username }}
+                    {% else %}
+                        My Document
+                    {% endif %}
+                </span>
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-state">
+            <p>No recent documents to display yet.</p>
+
+            <p style="margin: 18px 0;">
+                Upload your first document to get started.
+            </p>
+
+            <a class="dashboard-btn dashboard-btn-primary"
+               href="{{ url_for('documents.upload') }}">
+                Upload Your First Document
+            </a>
+        </div>
+
+    {% endif %}
+</section>
+
+{% endblock %}

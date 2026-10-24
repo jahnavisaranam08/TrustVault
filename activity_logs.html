@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="same-origin">
+
+    <title>TrustVault | Activity Logs</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d0b;
+            color: #f0fdf4;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 28px 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 27px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .muted {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: #111a16;
+            border: 1px solid #26372e;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 15px;
+            border: 1px solid #304438;
+            border-radius: 7px;
+            background: #17231c;
+            color: #f0fdf4;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover,
+        .btn:focus-visible {
+            border-color: #10b981;
+            outline-offset: 3px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            padding: 15px 13px;
+            border-bottom: 1px solid #26372e;
+            text-align: left;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        th {
+            color: #6ee7b7;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #0c1510;
+        }
+
+        td {
+            overflow-wrap: anywhere;
+        }
+
+        tbody tr:hover {
+            background: #142019;
+        }
+
+        .action-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #153527;
+            color: #6ee7b7;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .log-count {
+            color: #6ee7b7;
+            font-weight: bold;
+        }
+
+        .empty {
+            padding: 30px 10px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 13px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .topbar .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    <header class="topbar">
+        <div>
+            <h1>Activity Logs</h1>
+            <p class="muted">
+                Review recorded account and document activities.
+            </p>
+        </div>
+
+        <a class="btn"
+           href="{{ url_for('pages.dashboard') }}">
+            Back to Dashboard
+        </a>
+    </header>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>System Activity</h2>
+
+            <span class="muted">
+                Records:
+                <span class="log-count">{{ logs|length }}</span>
+                (latest 500 maximum)
+            </span>
+        </div>
+
+        {% if logs %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>Date &amp; Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            {% if log.user %}
+                                {{ log.user.username }}
+                            {% else %}
+                                System / Unknown
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="action-badge">
+                                {{ log.action or 'Activity' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ log.details or 'No additional details' }}
+                        </td>
+
+                        <td>
+                            {% if log.created_at %}
+                                {{ log.created_at.strftime(
+                                    '%d %b %Y, %I:%M %p'
+                                ) }}
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty">
+            <h3>No activity logs yet</h3>
+            <p>
+                Recorded user and document activities
+                will appear here.
+            </p>
+        </div>
+        {% endif %}
+    </section>
+
+    <p class="muted">
+        This page is intended for authorized administrators only.
+    </p>
+
+</main>
+</body>
+</html>

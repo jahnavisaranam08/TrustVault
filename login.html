@@ -1,0 +1,148 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login | TrustVault{% endblock %}
+
+{% block auth_content %}
+
+<style>
+    .auth-card {
+        width: 100%;
+        max-width: 440px;
+        margin: 6vh auto;
+        padding: 32px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+    }
+
+    .auth-brand {
+        margin: 0 0 28px;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-align: center;
+    }
+
+    .auth-brand span {
+        color: var(--green);
+    }
+
+    .auth-card h2 {
+        margin: 0 0 8px;
+        text-align: center;
+    }
+
+    .auth-description {
+        margin: 0 0 25px;
+        color: var(--muted);
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .auth-form label {
+        display: block;
+        margin: 17px 0 7px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .auth-form input {
+        display: block;
+    }
+
+    .auth-submit {
+        width: 100%;
+        margin-top: 24px;
+        padding: 13px;
+        background: var(--green);
+        border-color: var(--green);
+        color: #04120c;
+    }
+
+    .auth-submit:hover {
+        background: #36dba9;
+        color: #04120c;
+    }
+
+    .auth-footer {
+        margin: 22px 0 0;
+        color: var(--muted);
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .auth-footer a {
+        color: var(--green);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    @media (max-width: 480px) {
+        .auth-card {
+            margin: 3vh auto;
+            padding: 23px 18px;
+        }
+    }
+</style>
+
+<section class="auth-card">
+    <h1 class="auth-brand">
+        <span>Trust</span>Vault
+    </h1>
+
+    <h2>Welcome back</h2>
+
+    <p class="auth-description">
+        Log in to securely access your documents.
+    </p>
+
+    <form
+        class="auth-form"
+        method="POST"
+        action="{{ url_for('auth.login', next=request.args.get('next', '')) }}"
+    >
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
+
+        <label for="identifier">Username or email</label>
+
+        <input
+            id="identifier"
+            name="identifier"
+            type="text"
+            maxlength="120"
+            autocomplete="username"
+            value="{{ request.form.get('identifier', '') }}"
+            required
+            autofocus
+        >
+
+        <label for="password">Password</label>
+
+        <input
+            id="password"
+            name="password"
+            type="password"
+            maxlength="256"
+            autocomplete="current-password"
+            required
+        >
+
+        <button class="auth-submit" type="submit">
+            Log in
+        </button>
+    </form>
+
+    <p class="auth-footer">
+        New to TrustVault?
+        <a href="{{ url_for('auth.register') }}">
+            Create an account
+        </a>
+    </p>
+</section>
+
+{% endblock %}

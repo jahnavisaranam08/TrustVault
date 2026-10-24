@@ -1,0 +1,317 @@
+
+{% extends "base.html" %}
+
+{% block title %}Manage Users | TrustVault{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Manage Users</h1>
+        <p>View registered users and manage account access.</p>
+    </div>
+
+    <a class="btn btn-secondary"
+       href="{{ url_for('pages.dashboard') }}">
+        Back to Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Registered Users</h2>
+
+        <span class="user-count">
+            {{ users|length }} users
+        </span>
+    </div>
+
+    {% if users %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <strong>{{ user.username }}</strong>
+
+                        {% if user.id == current_user.id %}
+                            <span class="muted">(You)</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                        <span class="role-badge role-{{ user.role }}">
+                            {{ user.role|capitalize }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if user.is_active %}
+                            <span class="status-badge active">
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="status-badge inactive">
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if user.created_at %}
+                            {{ user.created_at.strftime('%d %b %Y') }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if user.id != current_user.id %}
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'pages.change_user_status',
+                                user_id=user.id
+                            ) }}"
+                            class="status-form"
+                            onsubmit="return confirm(
+                                'Are you sure you want to {% if user.is_active %}deactivate{% else %}activate{% endif %} this account?'
+                            );"
+                        >
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ csrf_token() }}"
+                            >
+
+                            {% if user.is_active %}
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger"
+                                >
+                                    Deactivate
+                                </button>
+                            {% else %}
+                                <button
+                                    type="submit"
+                                    class="btn btn-success"
+                                >
+                                    Activate
+                                </button>
+                            {% endif %}
+                        </form>
+
+                        {% else %}
+                            <span class="muted">
+                                Current account
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <h3>No users found</h3>
+        <p>Registered users will appear here.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+        margin-bottom: 8px;
+    }
+
+    .page-header p {
+        color: var(--text-muted, #94a3b8);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .card {
+        background: var(--card-bg, #101b15);
+        border: 1px solid var(--border-color, #24372c);
+        border-radius: 16px;
+        padding: 24px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .card-header h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .user-count {
+        color: var(--text-muted, #94a3b8);
+        font-size: 13px;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    th,
+    td {
+        padding: 15px 12px;
+        border-bottom: 1px solid var(--border-color, #24372c);
+        vertical-align: middle;
+    }
+
+    th {
+        color: var(--text-muted, #94a3b8);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        white-space: nowrap;
+    }
+
+    td {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .muted {
+        color: var(--text-muted, #94a3b8);
+        font-size: 12px;
+    }
+
+    .role-badge,
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .role-admin {
+        background: #312e81;
+        color: #c7d2fe;
+    }
+
+    .role-owner {
+        background: #064e3b;
+        color: #a7f3d0;
+    }
+
+    .role-viewer {
+        background: #1e3a5f;
+        color: #bfdbfe;
+    }
+
+    .status-badge.active {
+        background: #064e3b;
+        color: #a7f3d0;
+    }
+
+    .status-badge.inactive {
+        background: #451a1a;
+        color: #fecaca;
+    }
+
+    .status-form {
+        margin: 0;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 9px 12px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background: #7f1d1d;
+        color: #fecaca;
+    }
+
+    .btn-success {
+        background: #065f46;
+        color: #d1fae5;
+    }
+
+    .btn-secondary {
+        background: #17231c;
+        border-color: var(--border-color, #304438);
+        color: var(--text-color, #f0fdf4);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+        filter: brightness(1.15);
+        outline-offset: 3px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 15px;
+        color: var(--text-muted, #94a3b8);
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            padding: 14px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+        }
+
+        th,
+        td {
+            padding: 12px 9px;
+        }
+    }
+</style>
+
+{% endblock %}

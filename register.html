@@ -1,0 +1,193 @@
+
+{% extends "base.html" %}
+
+{% block title %}Register | TrustVault{% endblock %}
+
+{% block auth_content %}
+
+<style>
+    .auth-card {
+        width: 100%;
+        max-width: 460px;
+        margin: 4vh auto;
+        padding: 30px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+    }
+
+    .auth-brand {
+        margin: 0 0 25px;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-align: center;
+    }
+
+    .auth-brand span {
+        color: var(--green);
+    }
+
+    .auth-card h2 {
+        margin: 0 0 8px;
+        text-align: center;
+    }
+
+    .auth-description {
+        margin: 0 0 23px;
+        color: var(--muted);
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .auth-form label {
+        display: block;
+        margin: 15px 0 7px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .auth-form input {
+        display: block;
+    }
+
+    .auth-submit {
+        width: 100%;
+        margin-top: 23px;
+        padding: 13px;
+        background: var(--green);
+        border-color: var(--green);
+        color: #04120c;
+    }
+
+    .auth-submit:hover {
+        background: #36dba9;
+        color: #04120c;
+    }
+
+    .auth-footer {
+        margin: 21px 0 0;
+        color: var(--muted);
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .auth-footer a {
+        color: var(--green);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .auth-hint {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+        .auth-card {
+            margin: 2vh auto;
+            padding: 22px 17px;
+        }
+    }
+</style>
+
+<section class="auth-card">
+    <h1 class="auth-brand">
+        <span>Trust</span>Vault
+    </h1>
+
+    <h2>Create your account</h2>
+
+    <p class="auth-description">
+        Register to securely manage and share your documents.
+    </p>
+
+    <form
+        class="auth-form"
+        method="POST"
+        action="{{ url_for('auth.register') }}"
+    >
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
+
+        <label for="username">Username</label>
+
+        <input
+            id="username"
+            name="username"
+            type="text"
+            minlength="3"
+            maxlength="80"
+            pattern="[A-Za-z0-9_.-]+"
+            autocomplete="username"
+            value="{{ request.form.get('username', '') }}"
+            required
+        >
+
+        <small class="auth-hint">
+            Use 3–80 characters: letters, numbers, periods,
+            underscores or hyphens.
+        </small>
+
+        <label for="email">Email address</label>
+
+        <input
+            id="email"
+            name="email"
+            type="email"
+            maxlength="120"
+            autocomplete="email"
+            value="{{ request.form.get('email', '') }}"
+            required
+        >
+
+        <label for="password">Password</label>
+
+        <input
+            id="password"
+            name="password"
+            type="password"
+            minlength="8"
+            maxlength="256"
+            autocomplete="new-password"
+            aria-describedby="password-hint"
+            required
+        >
+
+        <small id="password-hint" class="auth-hint">
+            Password must contain at least 8 characters.
+        </small>
+
+        <label for="confirm_password">Confirm password</label>
+
+        <input
+            id="confirm_password"
+            name="confirm_password"
+            type="password"
+            minlength="8"
+            maxlength="256"
+            autocomplete="new-password"
+            required
+        >
+
+        <button class="auth-submit" type="submit">
+            Create account
+        </button>
+    </form>
+
+    <p class="auth-footer">
+        Already registered?
+        <a href="{{ url_for('auth.login') }}">
+            Log in
+        </a>
+    </p>
+</section>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied | TrustVault</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #080d0b;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #6ee7b7;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #10b981;
+            color: #06110c;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>403 - Access Denied</h1>
+        <p>You do not have permission to access this resource.</p>
+        <a href="{{ url_for('pages.dashboard') }}">Return to Dashboard</a>
+    </div>
+</body>
+</html>
